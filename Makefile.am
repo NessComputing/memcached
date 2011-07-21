@@ -16,7 +16,8 @@ memcached_SOURCES = memcached.c memcached.h \
                     thread.c daemon.c \
                     stats.c stats.h \
                     util.c util.h \
-                    trace.h cache.h sasl_defs.h
+                    trace.h cache.h sasl_defs.h \
+                    zookeeper_defs.h
 
 if BUILD_CACHE
 memcached_SOURCES += cache.c
@@ -29,6 +30,10 @@ endif
 
 if ENABLE_SASL
 memcached_SOURCES += sasl_defs.c
+endif
+
+if ENABLE_ZOOKEEPER
+memcached_SOURCES += zookeeper.c
 endif
 
 memcached_debug_SOURCES = $(memcached_SOURCES)

@@ -22,6 +22,7 @@
 #include "cache.h"
 
 #include "sasl_defs.h"
+#include "zookeeper_defs.h"
 
 /** Maximum length of a key. */
 #define KEY_MAX_LENGTH 250
@@ -280,6 +281,13 @@ struct settings {
     int backlog;
     int item_size_max;        /* Maximum item size, and upper end for slabs */
     bool sasl;              /* SASL on/off */
+#ifdef ENABLE_ZOOKEEPER
+    char *zookeeper_connect;
+    char *zookeeper_path;
+    char *zookeeper_service_name;
+    char *zookeeper_service_type;
+    bool zookeeper_enabled;
+#endif
 };
 
 extern struct stats stats;
@@ -471,6 +479,7 @@ enum delta_result_type add_delta(conn *c, const char *key,
 void accept_new_conns(const bool do_accept);
 conn *conn_from_freelist(void);
 bool  conn_add_to_freelist(conn *c);
+const char *prot_text(enum protocol);
 int   is_listen_thread(void);
 item *item_alloc(char *key, size_t nkey, int flags, rel_time_t exptime, int nbytes);
 char *item_cachedump(const unsigned int slabs_clsid, const unsigned int limit, unsigned int *bytes);

@@ -66,7 +66,6 @@ AC_ARG_ENABLE(sasl_pwdb,
 AS_IF([test "x$enable_sasl_pwdb" = "xyes"],
       [enable_sasl=yes ])
 
-
 dnl **********************************************************************
 dnl DETECT_SASL_CB_GETCONF
 dnl
@@ -127,13 +126,265 @@ if test "x$enable_dtrace" = "xyes"; then
   fi
 fi
 
+dnl **********************************************************************
+dnl WITH_LIBJSON
+dnl **********************************************************************
+
+AC_DEFUN([AC_DETECT_LIBJSON],
+[
+  AC_CACHE_CHECK([for libjson directory], [ac_cv_libjson_dir], 
+  [
+    saved_LIBS="$LIBS"
+    saved_LDFLAGS="$LDFLAGS"
+    saved_CPPFLAGS="$CPPFLAGS"
+    libjson_found=no
+    for libjsondir in $trylibjsondir "" $prefix /usr/local ; do
+      LDFLAGS="$saved_LDFLAGS"
+      LIBS="$saved_LIBS -ljson"
+    
+      # Skip the directory if it isn't there.
+      if test ! -z "$libjsondir" -a ! -d "$libjsondir" ; then
+        continue;
+      fi
+      if test ! -z "$libjsondir" ; then
+        if test -d "$libjsondir/lib" ; then
+          LDFLAGS="-L$libjsondir/lib $LDFLAGS"
+        else
+          LDFLAGS="-L$libjsondir $LDFLAGS"
+        fi
+        if test -d "$libjsondir/include" ; then
+          CPPFLAGS="-I$libjsondir/include $CPPFLAGS"
+        else
+          CPPFLAGS="-I$libjsondir $CPPFLAGS"
+        fi
+      fi
+
+      # Can I compile and link it?
+      AC_TRY_LINK([#include <json/json.h>], 
+                  [ json_object_new_object(); ],
+                  [ libjson_linked=yes ], [ libjson_linked=no ])
+      if test $libjson_linked = yes; then
+        if test ! -z "$libjsondir" ; then
+          ac_cv_libjson_dir=$libjsondir
+        else
+          ac_cv_libjson_dir="(system)"
+        fi
+        libjson_found=yes
+        break
+      fi
+    done
+    LIBS="$saved_LIBS"
+    LDFLAGS="$saved_LDFLAGS"
+    CPPFLAGS="$saved_CPPFLAGS"
+    if test $libjson_found = no ; then
+      AC_MSG_ERROR([libjson is required.
+        If it's already installed, specify its path using --with-libjson=/dir/
+      ])
+    fi
+  ])
+  LIBS="$LIBS -ljson"
+  if test $ac_cv_libjson_dir != "(system)"; then
+    if test -d "$ac_cv_libjson_dir/lib" ; then
+      LDFLAGS="-L$ac_cv_libjson_dir/lib $LDFLAGS"
+      le_libdir="$ac_cv_libjson_dir/lib"
+    else
+      LDFLAGS="-L$ac_cv_libjson_dir $LDFLAGS"
+      le_libdir="$ac_cv_libjson_dir"
+    fi
+    if test -d "$ac_cv_libjson_dir/include" ; then
+      CPPFLAGS="-I$ac_cv_libjson_dir/include $CPPFLAGS"
+    else
+      CPPFLAGS="-I$ac_cv_libjson_dir $CPPFLAGS"
+    fi
+  fi
+])
+
+AC_CHECK_HEADERS([json/json.h])
+trylibjsondir=""
+AC_ARG_WITH(libjson, [  --with-libjson=PATH   Specify path to libjson installation ],
+                       [
+                               if test "x$withval" != "xno"; then
+                                   trylibjsondir=$withval
+                               fi
+                       ])
+
+
+dnl **********************************************************************
+dnl WITH_LIBUUID
+dnl **********************************************************************
+
+AC_DEFUN([AC_DETECT_LIBUUID],
+[
+  AC_CACHE_CHECK([for libuuid directory], [ac_cv_libuuid_dir], 
+  [
+    saved_LIBS="$LIBS"
+    saved_LDFLAGS="$LDFLAGS"
+    saved_CPPFLAGS="$CPPFLAGS"
+    libuuid_found=no
+    for libuuiddir in $trylibuuiddir "" $prefix /usr/local ; do
+      LDFLAGS="$saved_LDFLAGS"
+      LIBS="$saved_LIBS -luuid"
+    
+      # Skip the directory if it isn't there.
+      if test ! -z "$libuuiddir" -a ! -d "$libuuiddir" ; then
+        continue;
+      fi
+      if test ! -z "$libuuiddir" ; then
+        if test -d "$libuuiddir/lib" ; then
+          LDFLAGS="-L$libuuiddir/lib $LDFLAGS"
+        else
+          LDFLAGS="-L$libuuiddir $LDFLAGS"
+        fi
+        if test -d "$libuuiddir/include" ; then
+          CPPFLAGS="-I$libuuiddir/include $CPPFLAGS"
+        else
+          CPPFLAGS="-I$libuuiddir $CPPFLAGS"
+        fi
+      fi
+
+      # Can I compile and link it?
+      AC_TRY_LINK([#include <uuid/uuid.h>], 
+                  [ uuid_generate(0); ],
+                  [ libuuid_linked=yes ], [ libuuid_linked=no ])
+      if test $libuuid_linked = yes; then
+        if test ! -z "$libuuiddir" ; then
+          ac_cv_libuuid_dir=$libuuiddir
+        else
+          ac_cv_libuuid_dir="(system)"
+        fi
+        libuuid_found=yes
+        break
+      fi
+    done
+    LIBS="$saved_LIBS"
+    LDFLAGS="$saved_LDFLAGS"
+    CPPFLAGS="$saved_CPPFLAGS"
+    if test $libuuid_found = no ; then
+      AC_MSG_ERROR([libuuid is required.
+        If it's already installed, specify its path using --with-libuuid=/dir/
+      ])
+    fi
+  ])
+  LIBS="$LIBS -luuid"
+  if test $ac_cv_libuuid_dir != "(system)"; then
+    if test -d "$ac_cv_libuuid_dir/lib" ; then
+      LDFLAGS="-L$ac_cv_libuuid_dir/lib $LDFLAGS"
+      le_libdir="$ac_cv_libuuid_dir/lib"
+    else
+      LDFLAGS="-L$ac_cv_libuuid_dir $LDFLAGS"
+      le_libdir="$ac_cv_libuuid_dir"
+    fi
+    if test -d "$ac_cv_libuuid_dir/include" ; then
+      CPPFLAGS="-I$ac_cv_libuuid_dir/include $CPPFLAGS"
+    else
+      CPPFLAGS="-I$ac_cv_libuuid_dir $CPPFLAGS"
+    fi
+  fi
+])
+
+AC_CHECK_HEADERS([uuid/uuid.h])
+trylibuuiddir=""
+AC_ARG_WITH(libuuid, [  --with-libuuid=PATH   Specify path to libuuid installation ],
+                       [
+                               if test "x$withval" != "xno"; then
+                                   trylibuuiddir=$withval
+                               fi
+                       ])
+
+dnl **********************************************************************
+dnl ENABLE_ZOOKEEPER
+dnl **********************************************************************
+AC_DEFUN([AC_DETECT_ZK],
+[
+  AC_CACHE_CHECK([for zookeeper directory], [ac_cv_libzk_dir], 
+  [
+    saved_LIBS="$LIBS"
+    saved_LDFLAGS="$LDFLAGS"
+    saved_CPPFLAGS="$CPPFLAGS"
+    zk_found=no
+    for zkdir in $tryzkdir "" $prefix /usr/local ; do
+      LDFLAGS="$saved_LDFLAGS"
+      LIBS="$saved_LIBS -lzookeeper_st"
+    
+      # Skip the directory if it isn't there.
+      if test ! -z "$zkdir" -a ! -d "$zkdir" ; then
+        continue;
+      fi
+      if test ! -z "$zkdir" ; then
+        if test -d "$zkdir/lib" ; then
+          LDFLAGS="-L$zkdir/lib $LDFLAGS"
+        else
+          LDFLAGS="-L$zkdir $LDFLAGS"
+        fi
+        if test -d "$zkdir/include" ; then
+          CPPFLAGS="-I$zkdir/include $CPPFLAGS"
+        else
+          CPPFLAGS="-I$zkdir $CPPFLAGS"
+        fi
+      fi
+
+      # Can I compile and link it?
+      AC_TRY_LINK([#include <zookeeper.h>], 
+                  [ zookeeper_init("", 0, 0, 0, 0, 0); ],
+                  [ libzk_linked=yes ], [ libzk_linked=no ])
+      if test $libzk_linked = yes; then
+        if test ! -z "$zkdir" ; then
+          ac_cv_libzk_dir=$zkdir
+        else
+          ac_cv_libzk_dir="(system)"
+        fi
+        zk_found=yes
+        break
+      fi
+    done
+    LIBS="$saved_LIBS"
+    LDFLAGS="$saved_LDFLAGS"
+    CPPFLAGS="$saved_CPPFLAGS"
+    if test $zk_found = no ; then
+      AC_MSG_ERROR([libzookeeper_st is required.
+        If it's already installed, specify its path using --with-zookeeper=/dir/
+      ])
+    fi
+  ])
+  LIBS="$LIBS -lzookeeper_st"
+  if test $ac_cv_libzk_dir != "(system)"; then
+    if test -d "$ac_cv_libzk_dir/lib" ; then
+      LDFLAGS="-L$ac_cv_libzk_dir/lib $LDFLAGS"
+      le_libdir="$ac_cv_libzk_dir/lib"
+    else
+      LDFLAGS="-L$ac_cv_libzk_dir $LDFLAGS"
+      le_libdir="$ac_cv_libzk_dir"
+    fi
+    if test -d "$ac_cv_libzk_dir/include" ; then
+      CPPFLAGS="-I$ac_cv_libzk_dir/include $CPPFLAGS"
+    else
+      CPPFLAGS="-I$ac_cv_libzk_dir $CPPFLAGS"
+    fi
+  fi
+])
+
+AC_CHECK_HEADERS([zookeeper.h])
+tryzkdir=""
+AC_ARG_WITH(zookeeper, [  --with-zookeeper=PATH   Specify path to zookeeper installation ],
+                       [
+                               if test "x$withval" != "xno"; then
+                                   tryzkdir=$withval
+                                   AC_DETECT_ZK
+                                   AC_DETECT_LIBUUID
+                                   AC_DETECT_LIBJSON
+                                   AC_DEFINE([ENABLE_ZOOKEEPER],1,[Set to nonzero if you want to include Zookeeper])
+                               fi
+                       ])
+
 AM_CONDITIONAL([BUILD_DTRACE],[test "$build_dtrace" = "yes"])
 AM_CONDITIONAL([DTRACE_INSTRUMENT_OBJ],[test "$dtrace_instrument_obj" = "yes"])
 AM_CONDITIONAL([ENABLE_SASL],[test "$enable_sasl" = "yes"])
+AM_CONDITIONAL([ENABLE_ZOOKEEPER],[test "$with_zookeeper" != "no"])
 
 AC_SUBST(DTRACE)
 AC_SUBST(DTRACEFLAGS)
 AC_SUBST(ENABLE_SASL)
+AC_SUBST(ENABLE_ZOOKEEPER)
 AC_SUBST(PROFILER_LDFLAGS)
 
 AC_ARG_ENABLE(coverage,
@@ -189,7 +440,7 @@ fi
 
 trylibeventdir=""
 AC_ARG_WITH(libevent,
-       [  --with-libevent=PATH     Specify path to libevent installation ],
+       [  --with-libevent=PATH    Specify path to libevent installation ],
        [
                 if test "x$withval" != "xno" ; then
                         trylibeventdir=$withval
@@ -228,7 +479,7 @@ AC_CACHE_CHECK([for libevent directory], ac_cv_libevent_dir, [
       fi
     fi
     # Can I compile and link it?
-    AC_TRY_LINK([#include <sys/time.h>
+      AC_TRY_LINK([#include <sys/time.h>
 #include <sys/types.h>
 #include <event.h>], [ event_init(); ],
        [ libevent_linked=yes ], [ libevent_linked=no ])

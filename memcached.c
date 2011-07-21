@@ -13,6 +13,7 @@
  *      Anatoly Vorobey <mellon@pobox.com>
  *      Brad Fitzpatrick <brad@danga.com>
  */
+
 #include "memcached.h"
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -217,6 +218,13 @@ static void settings_init(void) {
     settings.backlog = 1024;
     settings.binding_protocol = negotiating_prot;
     settings.item_size_max = 1024 * 1024; /* The famous 1MB upper limit. */
+#ifdef ENABLE_ZOOKEEPER
+    settings.zookeeper_connect = "";
+    settings.zookeeper_path = "/ness/srvc";
+    settings.zookeeper_service_name = "memcached";
+    settings.zookeeper_service_type = NULL;
+    settings.zookeeper_enabled = 0;
+#endif
 }
 
 /*
@@ -324,7 +332,7 @@ bool conn_add_to_freelist(conn *c) {
     return ret;
 }
 
-static const char *prot_text(enum protocol prot) {
+const char *prot_text(enum protocol prot) {
     char *rv = "unknown";
     switch(prot) {
         case ascii_prot:
@@ -4123,6 +4131,28 @@ static void clock_handler(const int fd, const short which, void *arg) {
     set_current_time();
 }
 
+#ifdef ENABLE_ZOOKEEPER
+static struct event zk_event;
+
+static void zookeeper_handler(const int fd, const short which, void *arg) {
+    struct timeval zk_t = {.tv_sec = 0, .tv_usec = 10000L};
+    static bool initialized = false;
+
+    if (initialized) {
+        /* only delete the event if it's actually there. */
+        evtimer_del(&zk_event);
+    } else {
+        initialized = true;
+    }
+
+    evtimer_set(&zk_event, zookeeper_handler, 0);
+    event_base_set(main_base, &zk_event);
+    evtimer_add(&zk_event, &zk_t);
+
+    mc_zookeeper_tick();
+}
+#endif
+
 static void usage(void) {
     printf(PACKAGE " " VERSION "\n");
     printf("-p <num>      TCP port number to listen on (default: 11211)\n"
@@ -4176,6 +4206,13 @@ static void usage(void) {
            "              (default: 1mb, min: 1k, max: 128m)\n");
 #ifdef ENABLE_SASL
     printf("-S            Turn on Sasl authentication\n");
+#endif
+#ifdef ENABLE_ZOOKEEPER
+    printf("\nZookeeper Announcement:\n");
+    printf("-Z <connect>  Announce on Zookeeper\n");
+    printf("-z <path>     Path for Zookeeper announcement\n");
+    printf("-N <name>     The service name to announce\n");
+    printf("-T <type>     The service type to announce\n");
 #endif
     return;
 }
@@ -4288,6 +4325,9 @@ static void remove_pidfile(const char *pid_file) {
 }
 
 static void sig_handler(const int sig) {
+#ifdef ENABLE_ZOOKEEPER
+    mc_zookeeper_shutdown();
+#endif
     printf("SIGINT handled.\n");
     exit(EXIT_SUCCESS);
 }
@@ -4431,6 +4471,12 @@ int main (int argc, char **argv) {
           "B:"  /* Binding protocol */
           "I:"  /* Max item size */
           "S"   /* Sasl ON */
+#ifdef ENABLE_ZOOKEEPER
+          "Z:"  /* Zookeeper connect string */
+          "z:"  /* Zookeeper node path */   
+          "N:"  /* Service Name */
+          "T:"  /* Service Type */
+#endif
         ))) {
         switch (c) {
         case 'a':
@@ -4605,6 +4651,37 @@ int main (int argc, char **argv) {
 #endif
             settings.sasl = true;
             break;
+#ifdef ENABLE_ZOOKEEPER
+        case 'Z': /* get the zookeeper connect string */
+            if (! optarg || ! optarg[0]) {
+                fprintf(stderr, "No Zookeeper connect string specified\n");
+                return 1;
+            }
+            settings.zookeeper_connect = strdup(optarg);
+            settings.zookeeper_enabled = 1;
+            break;
+        case 'z': /* get the zookeeper path */
+            if (! optarg || ! optarg[0]) {
+                fprintf(stderr, "No Zookeeper path specified\n");
+                return 1;
+            }
+            settings.zookeeper_path = strdup(optarg);
+            break;
+        case 'N': /* get the zookeeper service name */
+            if (! optarg || ! optarg[0]) {
+                fprintf(stderr, "No Zookeeper service name specified\n");
+                return 1;
+            }
+            settings.zookeeper_service_name = strdup(optarg);
+            break;
+        case 'T': /* get the zookeeper service name */
+            if (! optarg || ! optarg[0]) {
+                fprintf(stderr, "No Zookeeper service type specified\n");
+                return 1;
+            }
+            settings.zookeeper_service_type = strdup(optarg);
+            break;
+#endif
         default:
             fprintf(stderr, "Illegal argument \"%c\"\n", c);
             return 1;
@@ -4756,6 +4833,14 @@ int main (int argc, char **argv) {
 
     /* initialise clock event */
     clock_handler(0, 0, 0);
+
+#ifdef ENABLE_ZOOKEEPER
+    if (settings.zookeeper_enabled) {
+        if (mc_zookeeper_init()) {
+            zookeeper_handler(0, 0, 0);
+        }
+    }
+#endif
 
     /* create unix mode sockets after dropping privileges */
     if (settings.socketpath != NULL) {
