@@ -67,7 +67,7 @@ void assoc_init(void) {
 }
 
 item *assoc_find(const char *key, const size_t nkey) {
-    uint32_t hv = hash(key, nkey, 0);
+    uint32_t hv = mc_hash(key, nkey, 0);
     item *it;
     unsigned int oldbucket;
 
@@ -97,7 +97,7 @@ item *assoc_find(const char *key, const size_t nkey) {
    the item wasn't found */
 
 static item** _hashitem_before (const char *key, const size_t nkey) {
-    uint32_t hv = hash(key, nkey, 0);
+    uint32_t hv = mc_hash(key, nkey, 0);
     item **pos;
     unsigned int oldbucket;
 
@@ -140,7 +140,7 @@ int assoc_insert(item *it) {
 
     assert(assoc_find(ITEM_key(it), it->nkey) == 0);  /* shouldn't have duplicately named things defined */
 
-    hv = hash(ITEM_key(it), it->nkey, 0);
+    hv = mc_hash(ITEM_key(it), it->nkey, 0);
     if (expanding &&
         (oldbucket = (hv & hashmask(hashpower - 1))) >= expand_bucket)
     {
@@ -202,7 +202,7 @@ static void *assoc_maintenance_thread(void *arg) {
             for (it = old_hashtable[expand_bucket]; NULL != it; it = next) {
                 next = it->h_next;
 
-                bucket = hash(ITEM_key(it), it->nkey, 0) & hashmask(hashpower);
+                bucket = mc_hash(ITEM_key(it), it->nkey, 0) & hashmask(hashpower);
                 it->h_next = primary_hashtable[bucket];
                 primary_hashtable[bucket] = it;
             }

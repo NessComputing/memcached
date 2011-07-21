@@ -109,7 +109,6 @@ void vperror(const char *fmt, ...) {
     perror(buf);
 }
 
-#ifndef HAVE_HTONLL
 static uint64_t mc_swap64(uint64_t in) {
 #ifdef ENDIAN_LITTLE
     /* Little endian, flip the bytes around until someone makes a faster/better
@@ -127,12 +126,11 @@ static uint64_t mc_swap64(uint64_t in) {
 #endif
 }
 
-uint64_t ntohll(uint64_t val) {
+uint64_t mc_ntohll(uint64_t val) {
    return mc_swap64(val);
 }
 
-uint64_t htonll(uint64_t val) {
+uint64_t mc_htonll(uint64_t val) {
    return mc_swap64(val);
 }
-#endif
 

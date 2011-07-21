@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-uint32_t hash(const void *key, size_t length, const uint32_t initval);
+uint32_t mc_hash(const void *key, size_t length, const uint32_t initval);
 
 #ifdef    __cplusplus
 }
