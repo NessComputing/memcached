@@ -1,3 +1,6 @@
+Memcache + Zookeeper
+====================
+
 This fork adds zookeeper announcements to memcached. Our internal
 service discovery system uses ephemeral nodes on Zookeeper to publish
 the coordinates of a service (ip, port, type) to the platform.
@@ -14,26 +17,26 @@ http://www.ossp.org/pkg/lib/uuid/. The latter two are bundled with
 Fedora Linux.
 
 Configuration options
-=====================
+---------------------
 
---with-zookeeper=<path>  - Path to the zookeeper installation (or "yes" to use a systemwide installation)
---with-libjson=<path>    - Path to the libjson installation (system wide installed on fedora)
---with-libuuid=<path>    - Path to the libuuid installation (system wide installed on fedora)
+* --with-zookeeper=<path>  - Path to the zookeeper installation (or "yes" to use a systemwide installation)
+* --with-libjson=<path>    - Path to the libjson installation (system wide installed on fedora)
+* --with-libuuid=<path>    - Path to the libuuid installation (system wide installed on fedora)
 
 
 Command line options
-====================
+--------------------
 
--Z <connect>  - The Zookeeper connect string (<ip>:<port>[,<ip2>:<port2>])
--z <path>     - The base path on Zookeeper for announcements (default: /ness/srvc)
--N <name>     - The service name to announce (default: memcached)
--T <type>     - The service type to announce (not announced by default)
+* -Z <connect>  - The Zookeeper connect string (<ip>:<port>[,<ip2>:<port2>])
+* -z <path>     - The base path on Zookeeper for announcements (default: /ness/srvc)
+* -N <name>     - The service name to announce (default: memcached)
+* -T <type>     - The service type to announce (not announced by default)
 
--v enables zookeeper INFO logging
--vv enables zookeeper DEBUG logging
+* -v enables zookeeper INFO logging
+* -vv enables zookeeper DEBUG logging
 
 Legal
-=====
+-----
 
 (C) 2011 Ness Computing, Inc. 
 All rights reserved.
@@ -66,7 +69,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
------------------
+----
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
