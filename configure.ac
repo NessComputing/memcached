@@ -731,6 +731,14 @@ AC_PATH_PROG([XSLTPROC], [xsltproc], "no")
 AM_CONDITIONAL([BUILD_SPECIFICATIONS],
                [test "x$enable_docs" != "xno" -a "x$XML2RFC" != "xno" -a "x$XSLTPROC" != "xno"])
 
+AC_ARG_ENABLE(static,
+  [AS_HELP_STRING([--enable-static],[build static version])])
+if test "x$enable_static" = "xyes"
+then
+  LDFLAGS="-static $LDFLAGS"
+  LIBS="$LIBS -lrt -lm"
+fi
+
 
 dnl Let the compiler be a bit more picky. Please note that you cannot
 dnl specify these flags to the compiler before AC_CHECK_FUNCS, because

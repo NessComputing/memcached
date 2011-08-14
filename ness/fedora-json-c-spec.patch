@@ -1,0 +1,19 @@
+--- /usr/src/redhat/SPECS/json-c.spec	2010-04-07 22:27:33.000000000 -0700
++++ json-c.spec	2011-08-13 18:27:20.000000000 -0700
+@@ -41,7 +41,7 @@
+ done
+ 
+ %build
+-%configure --enable-shared --disable-static
++%configure --enable-shared --enable-static
+ make %{?_smp_mflags}
+ 
+ %install
+@@ -65,6 +65,7 @@
+ %defattr(-,root,root,-)
+ %{_includedir}/json/
+ %{_libdir}/libjson.so
++%{_libdir}/libjson.a
+ %{_libdir}/pkgconfig/json.pc
+ 
+ %files doc

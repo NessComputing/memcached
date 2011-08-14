@@ -1,0 +1,22 @@
+How to build:
+
+- install the zookeeper libs in /usr/local
+
+./autogen.sh
+./configure --with-zookeeper --enable-static
+make
+
+Static binary on Fedora Linux
+============================= 
+
+For ideologic reasons, Fedora Linux does not ship with the static versions of libuuid and libjson.
+
+Download the most recent versions of these packages:
+
+% yumdownloader --source libuuid
+% yumdownloader --source json-c
+
+apply the patches in the ness subdirectory and rebuild the packages.
+
+Then build the memcache with --enable-static
+

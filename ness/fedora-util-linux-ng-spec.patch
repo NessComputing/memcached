@@ -1,0 +1,38 @@
+--- /usr/src/redhat/SPECS/util-linux-ng.spec	2011-01-12 06:14:06.000000000 -0800
++++ util-linux-ng.spec	2011-08-13 18:12:03.000000000 -0700
+@@ -2,7 +2,7 @@
+ Summary: A collection of basic system utilities
+ Name: util-linux-ng
+ Version: 2.17.2
+-Release: 10%{?dist}
++Release: 10.1%{?dist}.im
+ License: GPLv2 and GPLv2+ and GPLv3+ and LGPLv2+ and BSD with advertising and Public Domain
+ Group: System Environment/Base
+ URL: ftp://ftp.kernel.org/pub/linux/utils/util-linux-ng
+@@ -174,7 +174,7 @@
+ Summary: Universally unique ID library
+ Group: Development/Libraries
+ License: BSD
+-#Provides: libuuid-static = %{version}-%{release}
++Provides: libuuid-static = %{version}-%{release}
+ Requires: libuuid = %{version}-%{release}
+ Requires: pkgconfig
+ 
+@@ -426,7 +426,7 @@
+ rm -f ${RPM_BUILD_ROOT}%{_infodir}/dir
+ 
+ # remove static libs
+-rm -f $RPM_BUILD_ROOT%{_libdir}/lib{uuid,blkid}.a
++rm -f $RPM_BUILD_ROOT%{_libdir}/libblkid.a
+ 
+ # find MO files
+ %find_lang %name
+@@ -725,7 +725,7 @@
+ 
+ %files -n libuuid-devel
+ %defattr(-,root,root)
+-#%{_libdir}/libuuid.a
++%{_libdir}/libuuid.a
+ %{_libdir}/libuuid.so
+ %{_includedir}/uuid
+ %{_mandir}/man3/uuid.3*
