@@ -22,7 +22,9 @@
 #include "cache.h"
 
 #include "sasl_defs.h"
+#ifdef ENABLE_ZOOKEEPER
 #include "zookeeper_defs.h"
+#endif
 
 /** Maximum length of a key. */
 #define KEY_MAX_LENGTH 250

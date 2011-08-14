@@ -379,7 +379,7 @@ AC_ARG_WITH(zookeeper, [  --with-zookeeper=PATH   Specify path to zookeeper inst
 AM_CONDITIONAL([BUILD_DTRACE],[test "$build_dtrace" = "yes"])
 AM_CONDITIONAL([DTRACE_INSTRUMENT_OBJ],[test "$dtrace_instrument_obj" = "yes"])
 AM_CONDITIONAL([ENABLE_SASL],[test "$enable_sasl" = "yes"])
-AM_CONDITIONAL([ENABLE_ZOOKEEPER],[test "$with_zookeeper" != "no"])
+AM_CONDITIONAL([ENABLE_ZOOKEEPER],[test "$zk_found" = "yes"])
 
 AC_SUBST(DTRACE)
 AC_SUBST(DTRACEFLAGS)
