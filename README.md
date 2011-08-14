@@ -1,5 +1,16 @@
-Memcache + Zookeeper
-====================
+Ness Computing memcached
+========================
+
+The Ness Computing memcached adds a couple of things to memcached:
+
+- add zookeeper announcements (see below)
+- add compile option to compile static on Fedora (RedHat) Linux.
+  See README.NESSCOMPUTING for details.
+- add long command line options
+
+
+Zookeeper Announcements for memcached
+-------------------------------------
 
 This fork adds zookeeper announcements to memcached. Our internal
 service discovery system uses ephemeral nodes on Zookeeper to publish
@@ -27,10 +38,10 @@ Configuration options
 Command line options
 --------------------
 
-* -Z <connect>  - The Zookeeper connect string (<ip>:<port>[,<ip2>:<port2>])
-* -z <path>     - The base path on Zookeeper for announcements (default: /ness/srvc)
-* -N <name>     - The service name to announce (default: memcached)
-* -T <type>     - The service type to announce (not announced by default)
+* -Z or --zookeeper-connect-string <connect>  - The Zookeeper connect string (<ip>:<port>[,<ip2>:<port2>])
+* -z or --zookeeper-node-path <path>          - The base path on Zookeeper for announcements (default: /ness/srvc)
+* -N or --ness-service-name <name>            - The service name to announce (default: memcached)
+* -T or --ness-service-type <type>            - The service type to announce (not announced by default)
 
 * -v enables zookeeper INFO logging
 * -vv enables zookeeper DEBUG logging
