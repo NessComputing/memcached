@@ -4329,7 +4329,6 @@ static void sig_handler(const int sig) {
 #ifdef ENABLE_ZOOKEEPER
     mc_zookeeper_shutdown();
 #endif
-    printf("SIGINT handled.\n");
     exit(EXIT_SUCCESS);
 }
 

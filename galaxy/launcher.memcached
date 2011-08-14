@@ -178,7 +178,7 @@ def stop
     puts 'Not running.'
     return 0
   else
-    Process.kill Signal.list['TERM'], pid
+    Process.kill Signal.list['INT'], pid
     wait_stopped pid
     return 0
   end
