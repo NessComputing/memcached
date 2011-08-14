@@ -23,6 +23,7 @@
 #include <sys/uio.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <getopt.h>
 
 /* some POSIX systems need the following definition
  * to get mlockall flags out of sys/mman.h.  */
@@ -4155,64 +4156,64 @@ static void zookeeper_handler(const int fd, const short which, void *arg) {
 
 static void usage(void) {
     printf(PACKAGE " " VERSION "\n");
-    printf("-p <num>      TCP port number to listen on (default: 11211)\n"
-           "-U <num>      UDP port number to listen on (default: 11211, 0 is off)\n"
-           "-s <file>     UNIX socket path to listen on (disables network support)\n"
-           "-a <mask>     access mask for UNIX socket, in octal (default: 0700)\n"
-           "-l <addr>     interface to listen on (default: INADDR_ANY, all addresses)\n"
-           "              <addr> may be specified as host:port. If you don't specify\n"
-           "              a port number, the value you specified with -p or -U is\n"
-           "              used. You may specify multiple addresses separated by comma\n"
-           "              or by using -l multiple times\n"
+    printf("-p --port <num>                TCP port number to listen on (default: 11211)\n"
+           "-U --udp-port <num>            UDP port number to listen on (default: 11211, 0 is off)\n"
+           "-s --socket-path <file>        UNIX socket path to listen on (disables network support)\n"
+           "-a --access-mask <mask>        access mask for UNIX socket, in octal (default: 0700)\n"
+           "-l --listen <addr>             interface to listen on (default: INADDR_ANY, all addresses)\n"
+           "                               <addr> may be specified as host:port. If you don't specify\n"
+           "                               a port number, the value you specified with -p or -U is\n"
+           "                               used. You may specify multiple addresses separated by comma\n"
+           "                               or by using -l multiple times\n"
 
-           "-d            run as a daemon\n"
-           "-r            maximize core file limit\n"
-           "-u <username> assume identity of <username> (only when run as root)\n"
-           "-m <num>      max memory to use for items in megabytes (default: 64 MB)\n"
-           "-M            return error on memory exhausted (rather than removing items)\n"
-           "-c <num>      max simultaneous connections (default: 1024)\n"
-           "-k            lock down all paged memory.  Note that there is a\n"
-           "              limit on how much memory you may lock.  Trying to\n"
-           "              allocate more than that would fail, so be sure you\n"
-           "              set the limit correctly for the user you started\n"
-           "              the daemon with (not for -u <username> user;\n"
-           "              under sh this is done with 'ulimit -S -l NUM_KB').\n"
-           "-v            verbose (print errors/warnings while in event loop)\n"
-           "-vv           very verbose (also print client commands/reponses)\n"
-           "-vvv          extremely verbose (also print internal state transitions)\n"
-           "-h            print this help and exit\n"
-           "-i            print memcached and libevent license\n"
-           "-P <file>     save PID in <file>, only used with -d option\n"
-           "-f <factor>   chunk size growth factor (default: 1.25)\n"
-           "-n <bytes>    minimum space allocated for key+value+flags (default: 48)\n");
-    printf("-L            Try to use large memory pages (if available). Increasing\n"
-           "              the memory page size could reduce the number of TLB misses\n"
-           "              and improve the performance. In order to get large pages\n"
-           "              from the OS, memcached will allocate the total item-cache\n"
-           "              in one large chunk.\n");
-    printf("-D <char>     Use <char> as the delimiter between key prefixes and IDs.\n"
-           "              This is used for per-prefix stats reporting. The default is\n"
-           "              \":\" (colon). If this option is specified, stats collection\n"
-           "              is turned on automatically; if not, then it may be turned on\n"
-           "              by sending the \"stats detail on\" command to the server.\n");
-    printf("-t <num>      number of threads to use (default: 4)\n");
-    printf("-R            Maximum number of requests per event, limits the number of\n"
-           "              requests process for a given connection to prevent \n"
-           "              starvation (default: 20)\n");
-    printf("-C            Disable use of CAS\n");
-    printf("-b            Set the backlog queue limit (default: 1024)\n");
-    printf("-B            Binding protocol - one of ascii, binary, or auto (default)\n");
-    printf("-I            Override the size of each slab page. Adjusts max item size\n"
-           "              (default: 1mb, min: 1k, max: 128m)\n");
+           "-d --daemonize                 run as a daemon\n"
+           "-r --max-core-file-limit       maximize core file limit\n"
+           "-u --user <username>           assume identity of <username> (only when run as root)\n"
+           "-m --max-memory <num>          max memory to use for items in megabytes (default: 64 MB)\n"
+           "-M --error-on-memory-exhausted return error on memory exhausted (rather than removing items)\n"
+           "-c --max-connections <num>     max simultaneous connections (default: 1024)\n"
+           "-k --lock-memory               lock down all paged memory.  Note that there is a\n"
+           "                               limit on how much memory you may lock.  Trying to\n"
+           "                               allocate more than that would fail, so be sure you\n"
+           "                               set the limit correctly for the user you started\n"
+           "                               the daemon with (not for -u <username> user;\n"
+           "                               under sh this is done with 'ulimit -S -l NUM_KB').\n"
+           "-v --verbose                   verbose (print errors/warnings while in event loop)\n"
+           "-vv                            very verbose (also print client commands/reponses)\n"
+           "-vvv                           extremely verbose (also print internal state transitions)\n"
+           "-h --help                      print this help and exit\n"
+           "-i --info                      print memcached and libevent license\n"
+           "-P --pid-file <file>           save PID in <file>, only used with -d option\n"
+           "-f --slab-factor <factor>      chunk size growth factor (default: 1.25)\n"
+           "-n --slab-chunk-size <bytes>   minimum space allocated for key+value+flags (default: 48)\n");
+    printf("-L --large-memory-pages        Try to use large memory pages (if available). Increasing\n"
+           "                               the memory page size could reduce the number of TLB misses\n"
+           "                               and improve the performance. In order to get large pages\n"
+           "                               from the OS, memcached will allocate the total item-cache\n"
+           "                               in one large chunk.\n");
+    printf("-D --prefix-delimiter <char>   Use <char> as the delimiter between key prefixes and IDs.\n"
+           "                               This is used for per-prefix stats reporting. The default is\n"
+           "                               \":\" (colon). If this option is specified, stats collection\n"
+           "                               is turned on automatically; if not, then it may be turned on\n"
+           "                               by sending the \"stats detail on\" command to the server.\n");
+    printf("-t --threads <num>             number of threads to use (default: 4)\n");
+    printf("-R --max-requests-per-event    Maximum number of requests per event, limits the number of\n"
+           "                               requests process for a given connection to prevent \n"
+           "                               starvation (default: 20)\n");
+    printf("-C --disable-cas               Disable use of CAS\n");
+    printf("-b --backlog-limit             Set the backlog queue limit (default: 1024)\n");
+    printf("-B --protocol                  Binding protocol - one of ascii, binary, or auto (default)\n");
+    printf("-I --max-item-size             Override the size of each slab page. Adjusts max item size\n"
+           "                               (default: 1mb, min: 1k, max: 128m)\n");
 #ifdef ENABLE_SASL
-    printf("-S            Turn on Sasl authentication\n");
+    printf("-S --enable-sasl               Turn on Sasl authentication\n");
 #endif
 #ifdef ENABLE_ZOOKEEPER
     printf("\nZookeeper Announcement:\n");
-    printf("-Z <connect>  Announce on Zookeeper\n");
-    printf("-z <path>     Path for Zookeeper announcement\n");
-    printf("-N <name>     The service name to announce\n");
-    printf("-T <type>     The service type to announce\n");
+    printf("-Z --zookeeper-connect-string <connect>  Zookeeper connect string\n");
+    printf("-z --zookeeper-node-path <path>          Path for Zookeeper announcement\n");
+    printf("-N --ness-service-name <name>            The service name to announce\n");
+    printf("-T --ness-service-type <type>            The service type to announce\n");
 #endif
     return;
 }
@@ -4409,8 +4410,49 @@ static bool sanitycheck(void) {
     return true;
 }
 
+static struct option long_options[] = {
+    { "access-mask",               required_argument, NULL, 'a' },
+    { "port",                      required_argument, NULL, 'p' },
+    { "socket-path",               required_argument, NULL, 's' },
+    { "udp-port",                  required_argument, NULL, 'U' },
+    { "max-memory",                required_argument, NULL, 'm' },
+    { "error-on-memory-exhausted", no_argument,       NULL, 'M' },
+    { "max-connections",           required_argument, NULL, 'c' },
+    { "lock-memory",               no_argument,       NULL, 'k' },
+    { "help",                      no_argument,       NULL, 'h' },
+    { "info",                      no_argument,       NULL, 'i' },
+    { "max-core-file-limit",       no_argument,       NULL, 'r' },
+    { "verbose",                   no_argument,       NULL, 'v' },
+    { "daemonize",                 no_argument,       NULL, 'd' },
+    { "listen",                    required_argument, NULL, 'l' },
+    { "user",                      required_argument, NULL, 'u' },
+    { "pid-file",                  required_argument, NULL, 'P' },
+    { "slab-factor",               required_argument, NULL, 'f' },
+    { "slab-chunk-size",           required_argument, NULL, 'n' },
+    { "threads",                   required_argument, NULL, 't' },
+    { "prefix-delimiter",          required_argument, NULL, 'D' },
+    { "large-memory-pages",        no_argument,       NULL, 'L' },
+    { "max-requests-per-event",    required_argument, NULL, 'R' },
+    { "disable-cas",               no_argument,       NULL, 'C' },
+    { "backlog-limit",             required_argument, NULL, 'b' },
+    { "protocol",                  required_argument, NULL, 'B' },
+    { "max-item-size",             required_argument, NULL, 'I' },
+#ifdef ENABLE_SASL
+    { "enable-sasl",               no_argument,       NULL, 'S' },
+#endif
+#ifdef ENABLE_ZOOKEEPER
+    { "zookeeper-connect-string",  required_argument, NULL, 'Z' },
+    { "zookeeper-node-path",       required_argument, NULL, 'z' },
+    { "ness-service-name",         required_argument, NULL, 'N' },
+    { "ness-service-type",         required_argument, NULL, 'T' },
+#endif
+    { NULL, no_argument, NULL, 0 }
+};
+
 int main (int argc, char **argv) {
     int c;
+    int option_index = 0;
+
     bool lock_memory = false;
     bool do_daemonize = false;
     bool preallocate = false;
@@ -4444,7 +4486,7 @@ int main (int argc, char **argv) {
     setbuf(stderr, NULL);
 
     /* process arguments */
-    while (-1 != (c = getopt(argc, argv,
+    while (-1 != (c = getopt_long(argc, argv,
           "a:"  /* access mask for unix socket */
           "p:"  /* TCP port number to listen on */
           "s:"  /* unix socket path to listen on */
@@ -4477,7 +4519,8 @@ int main (int argc, char **argv) {
           "N:"  /* Service Name */
           "T:"  /* Service Type */
 #endif
-        ))) {
+        , long_options, &option_index))) {
+
         switch (c) {
         case 'a':
             /* access for unix domain socket, as octal mask (like chmod)*/
@@ -4683,7 +4726,6 @@ int main (int argc, char **argv) {
             break;
 #endif
         default:
-            fprintf(stderr, "Illegal argument \"%c\"\n", c);
             return 1;
         }
     }
