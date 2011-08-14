@@ -17,7 +17,7 @@ unless ($version =~ m/^\d+\.\d+\.\d+/) {
 }
 
 $version =~ s/-/_/g;
-write_file('version.m4', "m4_define([VERSION_NUMBER], [$version])\n");
+write_file('version.m4', "m4_define([VERSION_NUMBER], [$version-NESS_ZK])\n");
 my ($VERSION, $FULLVERSION, $RELEASE);
 
 if ($version =~ m/^(\d+\.\d+\.\d+)_rc(\d+)$/) {
