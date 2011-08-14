@@ -180,9 +180,6 @@ static char *get_announce_ip()
                 if (foo->sin_addr.s_addr == htonl(INADDR_ANY)) {
                     continue;
                 }
-                else if (foo->sin_addr.s_addr == htonl(INADDR_LOOPBACK)) {
-                    continue;
-                }
                 else {
                     // 4*3 + dots + \0 = 16
                     result = malloc(16);
@@ -192,6 +189,12 @@ static char *get_announce_ip()
             }
         }
         freeaddrinfo(ai);
+    }
+    if (result) {
+        LOG_DEBUG(("Result is %s", result));
+    }
+    else {
+        LOG_DEBUG(("No address found!"));
     }
     return result;
 }
