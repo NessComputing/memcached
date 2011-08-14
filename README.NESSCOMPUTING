@@ -1,4 +1,5 @@
-How to build:
+Building
+========
 
 - install the zookeeper libs in /usr/local
 
@@ -20,3 +21,7 @@ apply the patches in the ness subdirectory and rebuild the packages.
 
 Then build the memcache with --enable-static
 
+Galaxy 
+======
+
+The 'galaxy' folder contains the necessary pieces to integrate memcached with galaxy. Use launcher type 'memcached'.
