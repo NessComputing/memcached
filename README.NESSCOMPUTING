@@ -10,7 +10,8 @@ make
 Static binary on Fedora Linux
 ============================= 
 
-For ideologic reasons, Fedora Linux does not ship with the static versions of libuuid and libjson.
+For ideologic reasons, Fedora Linux does not ship with the static
+versions of libuuid and libjson.
 
 Download the most recent versions of these packages:
 
@@ -21,7 +22,40 @@ apply the patches in the ness subdirectory and rebuild the packages.
 
 Then build the memcache with --enable-static
 
+Memcached configuration
+=======================
+
+Place a memcached.conf file in galaxy. This file has the same format
+as a properties file; keys are the long options for memcached.
+
+e.g.
+
+--- cut ---
+port=#{private.port.0}
+listen=#{internal.ip}
+verbose
+protocol=auto
+--- cut ---
+
+Service Discovery
+=================
+
+The launcher.memcached picks up the discovery config from config.properties. No need to add it
+to the memcached configuration file.
+
 Galaxy 
 ======
 
-The 'galaxy' folder contains the necessary pieces to integrate memcached with galaxy. Use launcher type 'memcached'.
+The 'galaxy' folder contains the necessary pieces to integrate memcached with galaxy. 
+
+- make sure that all the pieces are checked into git. 'make_tarball.sh' use the git
+  version tag to build the tarball name.
+- build memcached static and with zookeeper support (see above).
+- get the current set of galaxy scripts. Modify 'make_tarball.sh' to point at the scripts.
+- run 'make_tarball.sh'.
+- make sure that the resulting tarball does not clobber an existing name.
+- upload the resulting tarball to depot.
+
+If you can make no sense of these instructions: They are Ness
+specific, so working at Ness really helps, because then you can ask
+Henning to build it. :-)

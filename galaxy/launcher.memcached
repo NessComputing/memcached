@@ -90,7 +90,6 @@ def load_options options_file="memcached.conf"
 
   sources.each do |source_file|
     source_file.each do |line|
-      @log.debug("Pondering over #{line}")
       line.strip!
       if (line[0] != ?# and line[0] != ?=)
         index = line.index('=')
@@ -118,6 +117,24 @@ def execute
   Dir.chdir @scripts.base
 
   options = load_options "memcached.conf"
+
+#
+# Ness specific piece that picks up the global discovery
+# config and converts it into memcache digestible settings
+#
+  config = load_options "config.properties"
+
+  if options['zookeeper-connect-string'].nil?
+    options['zookeeper-connect-string'] = config['ness.zookeeper.clientConnect']
+  end
+
+  if options['zookeeper-node-path'].nil?
+    options['zookeeper-node-path'] = config['ness.discovery.root']
+  end
+#
+# end ness specific piece
+#
+
   command_line = options.inject('') do |memo, (option,value)| 
     memo << " --#{option}"
     memo << " #{value}" unless value.nil?
