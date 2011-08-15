@@ -7,6 +7,7 @@ The Ness Computing memcached adds a couple of things to memcached:
 - add compile option to compile static on Fedora (RedHat) Linux.
   See README.NESSCOMPUTING for details.
 - add long command line options
+- galaxification for deployment with galaxy
 
 
 Zookeeper Announcements for memcached
