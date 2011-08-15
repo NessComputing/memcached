@@ -7,6 +7,31 @@ Building
 ./configure --with-zookeeper --enable-static
 make
 
+Getting Zookeeper
+=================
+
+Neither Ubuntu nor Fedora include an usable zookeeper
+installation. Get the latest one (3.3.3) from zookeeper.apache.org,
+unpack it and run "./configure ; make; make install" in the src/c
+tree. Then move everything in /usr/local/include/c-client-src/* into
+/usr/local/include.
+
+You will need at least
+
+include/recordio.h
+include/zookeeper.h
+include/zookeeper.jute.h
+include/zookeeper_log.h
+include/zookeeper_version.h
+lib/libzookeeper_st.a
+lib/libzookeeper_st.la
+lib/libzookeeper_st.so
+lib/libzookeeper_st.so.2
+lib/libzookeeper_st.so.2.0.0
+
+in a folder to build memcached with zookeeper.
+
+
 Static binary on Fedora Linux
 ============================= 
 
@@ -21,6 +46,18 @@ Download the most recent versions of these packages:
 apply the patches in the ness subdirectory and rebuild the packages.
 
 Then build the memcache with --enable-static
+
+
+Static binary on Ubuntu Linux (10.04 LTS)
+=========================================
+
+Install libevent-dev, uuid-dev, libjson0-dev. Don't use the zookeeper
+included with Ubuntu (it is 3.2.2 and it only includes the _mt
+libraries, not the single threaded ones).
+
+Apart from that, Ubuntu is delightfully uneventful, which makes for a
+nice change.
+
 
 Memcached configuration
 =======================
