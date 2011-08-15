@@ -105,6 +105,41 @@ def load_options options_file="memcached.conf"
   options
 end
 
+#
+# Ness specific piece that picks up the global discovery
+# config and converts it into memcache digestible settings
+#
+def ness_special_sauce options
+  # Find the right node path from config.properties
+  config = load_options "config.properties"
+
+  if options['zookeeper-node-path'].nil?
+    options['zookeeper-node-path'] = config['ness.discovery.root']
+  end
+
+  # Connect string is a bit more complicated
+  if options['zookeeper-connect-string'].nil?
+    # If an explicit connect string is given, use that.
+    if !config['ness.zookeeper.clientConnect'].nil?
+      options['zookeeper-connect-string'] = config['ness.zookeeper.clientConnect']
+    else
+      # Otherwise, build it from the server settings.
+      client_port = config['ness.zookeeper.clientPort']
+      connect_string = []
+      server = 1
+      server_config = config["ness.zookeeper.server.#{server}"]
+      while ! server_config.nil?
+        connect_string << server_config.split(":")[0] + ":" + client_port
+        server = server + 1
+        server_config = config["ness.zookeeper.server.#{server}"]
+      end
+      options['zookeeper-connect-string'] = connect_string.join(',')
+    end
+  end
+
+  options
+end
+
 
 #
 # Executes the actual child process. 
@@ -118,19 +153,10 @@ def execute
 
   options = load_options "memcached.conf"
 
-#
-# Ness specific piece that picks up the global discovery
-# config and converts it into memcache digestible settings
-#
-  config = load_options "config.properties"
+  options = ness_special_sauce options
 
-  if options['zookeeper-connect-string'].nil?
-    options['zookeeper-connect-string'] = config['ness.zookeeper.clientConnect']
-  end
 
-  if options['zookeeper-node-path'].nil?
-    options['zookeeper-node-path'] = config['ness.discovery.root']
-  end
+
 #
 # end ness specific piece
 #
