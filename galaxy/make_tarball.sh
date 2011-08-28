@@ -3,7 +3,7 @@
 # Build the galaxy tarball to deploy memcached in galaxy.
 #
 
-SCRIPTS=/tmp/tc-galaxy-6.2.tar.gz
+SCRIPTS=/tmp/tc-galaxy-7.0.tar.gz
 
 if [ -z "$SCRIPTS" -o ! -f $SCRIPTS ]; then
   echo "$SCRIPTS does not exist. You need the galaxy scripts to build the tarball!"
