@@ -96,3 +96,92 @@ The 'galaxy' folder contains the necessary pieces to integrate memcached with ga
 If you can make no sense of these instructions: They are Ness
 specific, so working at Ness really helps, because then you can ask
 Henning to build it. :-)
+
+Long Command line options
+=========================
+
+To produce more readable confguration files (I mean, seriously, how
+can you guys stand a config file that consist of one-letter options?),
+the ness memcached supports long command line options:
+
+-p --port <num>                TCP port number to listen on (default: 11211)
+
+-U --udp-port <num>            UDP port number to listen on (default: 11211, 0 is off)
+
+-s --socket-path <file>        UNIX socket path to listen on (disables network support)
+
+-a --access-mask <mask>        access mask for UNIX socket, in octal (default: 0700)
+
+-l --listen <addr>             interface to listen on (default: INADDR_ANY, all addresses)
+                               <addr> may be specified as host:port. If you don't specify
+                               a port number, the value you specified with -p or -U is
+                               used. You may specify multiple addresses separated by comma
+                               or by using -l multiple times
+
+-d --daemonize                 run as a daemon
+
+-r --max-core-file-limit       maximize core file limit
+
+-u --user <username>           assume identity of <username> (only when run as root)
+
+-m --max-memory <num>          max memory to use for items in megabytes (default: 64 MB)
+
+-M --error-on-memory-exhausted return error on memory exhausted (rather than removing items)
+
+-c --max-connections <num>     max simultaneous connections (default: 1024)
+
+-k --lock-memory               lock down all paged memory.  Note that there is a
+                               limit on how much memory you may lock.  Trying to
+                               allocate more than that would fail, so be sure you
+                               set the limit correctly for the user you started
+                               the daemon with (not for -u <username> user;
+                               under sh this is done with 'ulimit -S -l NUM_KB').
+
+-v --verbose                   verbose (print errors/warnings while in event loop)
+-vv                            very verbose (also print client commands/reponses)
+-vvv                           extremely verbose (also print internal state transitions)
+
+-h --help                      print this help and exit
+
+-i --info                      print memcached and libevent license
+
+-P --pid-file <file>           save PID in <file>, only used with -d option
+
+-f --slab-factor <factor>      chunk size growth factor (default: 1.25)
+
+-n --slab-chunk-size <bytes>   minimum space allocated for key+value+flags (default: 48)
+
+-L --large-memory-pages        Try to use large memory pages (if available). Increasing
+                               the memory page size could reduce the number of TLB misses
+                               and improve the performance. In order to get large pages
+                               from the OS, memcached will allocate the total item-cache
+                               in one large chunk.
+
+-D --prefix-delimiter <char>   Use <char> as the delimiter between key prefixes and IDs.
+                               This is used for per-prefix stats reporting. The default is
+                               ":" (colon). If this option is specified, stats collection
+                               is turned on automatically; if not, then it may be turned on
+                               by sending the "stats detail on" command to the server.
+
+-t --threads <num>             number of threads to use (default: 4)
+
+-R --max-requests-per-event    Maximum number of requests per event, limits the number of
+                               requests process for a given connection to prevent 
+                               starvation (default: 20)
+
+-C --disable-cas               Disable use of CAS
+
+-b --backlog-limit             Set the backlog queue limit (default: 1024)
+
+-B --protocol                  Binding protocol - one of ascii, binary, or auto (default)
+
+-I --max-item-size             Override the size of each slab page. Adjusts max item size
+                               (default: 1mb, min: 1k, max: 128m)
+
+-Z --zookeeper-connect-string <connect>  Zookeeper connect string
+
+-z --zookeeper-node-path <path>          Path for Zookeeper announcement
+
+-N --ness-service-name <name>            The service name to announce
+
+-T --ness-service-type <type>            The service type to announce
