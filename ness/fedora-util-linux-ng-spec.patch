@@ -1,14 +1,23 @@
---- /usr/src/redhat/SPECS/util-linux-ng.spec	2011-01-12 06:14:06.000000000 -0800
-+++ util-linux-ng.spec	2011-08-13 18:12:03.000000000 -0700
+--- util-linux-ng.spec.orig	2011-01-12 06:14:06.000000000 -0800
++++ util-linux-ng.spec	2011-08-29 10:33:37.534007189 -0700
 @@ -2,7 +2,7 @@
  Summary: A collection of basic system utilities
  Name: util-linux-ng
  Version: 2.17.2
 -Release: 10%{?dist}
-+Release: 10.1%{?dist}.im
++Release: 10.1%{?dist}.ness
  License: GPLv2 and GPLv2+ and GPLv3+ and LGPLv2+ and BSD with advertising and Public Domain
  Group: System Environment/Base
  URL: ftp://ftp.kernel.org/pub/linux/utils/util-linux-ng
+@@ -144,7 +144,7 @@
+ Summary: Block device ID library
+ Group: Development/Libraries
+ License: LGPLv2+
+-#Provides: libblkid-static = %{version}-%{release}
++Provides: libblkid-static = %{version}-%{release}
+ Requires: libblkid = %{version}-%{release}
+ Requires: pkgconfig
+ 
 @@ -174,7 +174,7 @@
  Summary: Universally unique ID library
  Group: Development/Libraries
@@ -18,16 +27,26 @@
  Requires: libuuid = %{version}-%{release}
  Requires: pkgconfig
  
-@@ -426,7 +426,7 @@
+@@ -425,9 +425,6 @@
+ # omit info/dir file
  rm -f ${RPM_BUILD_ROOT}%{_infodir}/dir
  
- # remove static libs
+-# remove static libs
 -rm -f $RPM_BUILD_ROOT%{_libdir}/lib{uuid,blkid}.a
-+rm -f $RPM_BUILD_ROOT%{_libdir}/libblkid.a
- 
+-
  # find MO files
  %find_lang %name
-@@ -725,7 +725,7 @@
+ 
+@@ -712,7 +709,7 @@
+ 
+ %files -n libblkid-devel
+ %defattr(-,root,root)
+-#%{_libdir}/libblkid.a
++%{_libdir}/libblkid.a
+ %{_libdir}/libblkid.so
+ %{_includedir}/blkid
+ %{_mandir}/man3/libblkid.3*
+@@ -725,7 +722,7 @@
  
  %files -n libuuid-devel
  %defattr(-,root,root)
