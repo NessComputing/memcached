@@ -4435,13 +4435,6 @@ static void usage(void) {
 #ifdef ENABLE_SASL
     printf("-S --enable-sasl               Turn on Sasl authentication\n");
 #endif
-#ifdef ENABLE_ZOOKEEPER
-    printf("\nZookeeper Announcement:\n");
-    printf("-Z --zookeeper-connect-string <connect>  Zookeeper connect string\n");
-    printf("-z --zookeeper-node-path <path>          Path for Zookeeper announcement\n");
-    printf("-N --ness-service-name <name>            The service name to announce\n");
-    printf("-T --ness-service-type <type>            The service type to announce\n");
-#endif
     printf("-o --experimental-opts         Comma separated list of extended or experimental options\n"
            "                               - (EXPERIMENTAL) maxconns_fast: immediately close new\n"
            "                                 connections if over maxconns limit.\n"
@@ -4450,6 +4443,13 @@ static void usage(void) {
            "                                 Set this based on \"STAT hash_power_level\" before a \n"
            "                                 restart.\n"
            );
+#ifdef ENABLE_ZOOKEEPER
+    printf("\nZookeeper Announcement:\n");
+    printf("-Z --zookeeper-connect-string <connect>  Zookeeper connect string\n");
+    printf("-z --zookeeper-node-path <path>          Path for Zookeeper announcement\n");
+    printf("-N --ness-service-name <name>            The service name to announce\n");
+    printf("-T --ness-service-type <type>            The service type to announce\n");
+#endif
     return;
 }
 
@@ -4769,7 +4769,6 @@ int main (int argc, char **argv) {
 #endif
         , long_options, &option_index))) {
 
-        ))) {
         switch (c) {
         case 'a':
             /* access for unix domain socket, as octal mask (like chmod)*/
