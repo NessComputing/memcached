@@ -4442,13 +4442,13 @@ static void usage(void) {
     printf("-N --ness-service-name <name>            The service name to announce\n");
     printf("-T --ness-service-type <type>            The service type to announce\n");
 #endif
-    printf("-o            Comma separated list of extended or experimental options\n"
-           "              - (EXPERIMENTAL) maxconns_fast: immediately close new\n"
-           "                connections if over maxconns limit\n"
-           "              - hashpower: An integer multiplier for how large the hash\n"
-           "                table should be. Can be grown at runtime if not big enough.\n"
-           "                Set this based on \"STAT hash_power_level\" before a \n"
-           "                restart.\n"
+    printf("-o --experimental-opts         Comma separated list of extended or experimental options\n"
+           "                               - (EXPERIMENTAL) maxconns_fast: immediately close new\n"
+           "                                 connections if over maxconns limit.\n"
+           "                               - hashpower: An integer multiplier for how large the hash\n"
+           "                                 table should be. Can be grown at runtime if not big enough.\n"
+           "                                 Set this based on \"STAT hash_power_level\" before a \n"
+           "                                 restart.\n"
            );
     return;
 }
@@ -4674,6 +4674,7 @@ static struct option long_options[] = {
 #ifdef ENABLE_SASL
     { "enable-sasl",               no_argument,       NULL, 'S' },
 #endif
+    { "experimental-opts",         required_argument, NULL, 'o' },
 #ifdef ENABLE_ZOOKEEPER
     { "zookeeper-connect-string",  required_argument, NULL, 'Z' },
     { "zookeeper-node-path",       required_argument, NULL, 'z' },

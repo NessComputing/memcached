@@ -178,6 +178,15 @@ the ness memcached supports long command line options:
 -I --max-item-size             Override the size of each slab page. Adjusts max item size
                                (default: 1mb, min: 1k, max: 128m)
 
+-o --experimental-opts         Comma separated list of extended or experimental options
+                               - (EXPERIMENTAL) maxconns_fast: immediately close new
+                                 connections if over maxconns limit.
+                               - hashpower: An integer multiplier for how large the hash
+                                 table should be. Can be grown at runtime if not big enough.
+                                 Set this based on \"STAT hash_power_level\" before a
+                                 restart.
+
+
 -Z --zookeeper-connect-string <connect>  Zookeeper connect string
 
 -z --zookeeper-node-path <path>          Path for Zookeeper announcement
