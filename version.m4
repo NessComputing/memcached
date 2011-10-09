@@ -1,1 +1,1 @@
-m4_define([VERSION_NUMBER], [1.4.6_21_g0f5fb88-NESS_ZK])
+m4_define([VERSION_NUMBER], [1.4.8_23_gbb4e8d8-NESS_ZK])
